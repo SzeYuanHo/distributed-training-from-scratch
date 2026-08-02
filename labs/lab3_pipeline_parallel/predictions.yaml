@@ -1,0 +1,94 @@
+# Lab 3 predictions. Fill before `python tasks.py bench LAB=3`.
+# Then: python tasks.py reconcile LAB=3
+
+# --------------------------------------------------------------------------- #
+# Elapsed idle fractions. Pure arithmetic from THEORY section 1.
+# --------------------------------------------------------------------------- #
+
+theoretical_bubble_p2_m4:
+  value: null
+  units: fraction
+  note: (p-1)/(m+p-1). Exact; (p-1)/m is the separate overhead ratio.
+
+theoretical_bubble_p4_m8:
+  value: null
+  units: fraction
+
+theoretical_bubble_p4_m16:
+  value: null
+  units: fraction
+
+measured_bubble_p4_m8:
+  value: null
+  units: fraction
+  note: >
+    What the Gantt chart will actually show. It will be worse than the theory.
+    Predict how much worse and why: stage imbalance, point-to-point latency the
+    model ignores, and python overhead per micro-batch are the three candidates.
+
+# --------------------------------------------------------------------------- #
+# Schedule structure. Exact integers; the simulation test checks them.
+# --------------------------------------------------------------------------- #
+
+afab_max_inflight_microbatches_p4_m8:
+  value: null
+  units: micro-batches
+  note: Peak activations held by the busiest stage under AFAB.
+
+onefonebe_max_inflight_microbatches_p4_m8:
+  value: null
+  units: micro-batches
+  note: Same under 1F1B. The difference is the whole reason 1F1B is the default.
+
+onefonebe_warmup_steps_stage0_p4:
+  value: null
+  units: forwards
+  note: How many forwards stage 0 runs before its first backward.
+
+onefonebe_warmup_steps_stage3_p4:
+  value: null
+  units: forwards
+
+# --------------------------------------------------------------------------- #
+# Load balance. THEORY section 5.
+# --------------------------------------------------------------------------- #
+
+slowest_stage_index_p3_small:
+  value: null
+  units: stage index
+  note: Which of the three stages carries the most FLOPs for the `small` preset.
+
+stage_imbalance_factor_p3_small:
+  value: null
+  units: x
+  note: Slowest stage FLOPs divided by fastest.
+
+stage_imbalance_factor_p3_vocab128k:
+  value: null
+  units: x
+  note: >
+    Same model with V=128000. Predict this before computing it; the change is the
+    reason real pipeline configs do not split evenly by layer count.
+
+# --------------------------------------------------------------------------- #
+# Memory
+# --------------------------------------------------------------------------- #
+
+activation_memory_ratio_afab_over_1f1b_p4_m16:
+  value: null
+  units: x
+  note: >
+    From the O(m) against O(p) argument. Then compare to the measurement, which
+    will be smaller than the theory because parameters and the framework are in
+    the measured number too.
+
+# --------------------------------------------------------------------------- #
+# The stretch question
+# --------------------------------------------------------------------------- #
+
+interleaved_v_star_infiniband:
+  value: null
+  units: chunks
+  note: >
+    THEORY section 4. The v at which the extra point-to-point traffic cancels the
+    bubble saving, on a 25 GB/s link.

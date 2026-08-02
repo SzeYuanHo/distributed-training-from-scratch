@@ -1,0 +1,63 @@
+alpha_seconds:
+  value: 0.00003
+  units: s
+  note: >
+    Thirty microseconds. Added up a syscall, a loopback round trip and a
+    scheduler wakeup on the far side. Guessing before I measure.
+
+beta_seconds_per_byte:
+  value: 0.0000000005
+  units: s/byte
+  note: >
+    2 GB/s effective. Loopback is a memcpy plus protocol, so somewhere well
+    under DRAM and well above a real NIC.
+
+ring_allreduce_bytes_per_rank_n4_1mb:
+  value: 1572864
+  units: bytes
+  note: 2 * (4 - 1) / 4 * 1048576.
+
+ring_allreduce_sends_per_rank_n4:
+  value: 6
+  units: messages
+  note: Two phases of N - 1 sends.
+
+naive_allreduce_bytes_at_root_n4_1mb:
+  value: 3145728
+  units: bytes
+  note: Rank 0 receives three 1 MiB buffers during the gather.
+
+broadcast_linear_sends_n8:
+  value: 7
+  units: messages
+  note: The source sends once to every other rank.
+
+broadcast_tree_sends_total_n8:
+  value: 7
+  units: messages
+  note: Every non-source rank receives exactly once.
+
+allreduce_ring_1mb_n4_seconds:
+  value: 0.000966432
+  units: s
+  note: 6 alpha plus 1.5 MiB times beta.
+
+allreduce_ring_16mb_n4_seconds:
+  value: 0.012762912
+  units: s
+  note: 6 alpha plus 1.5 times 16 MiB times beta.
+
+crossover_bytes_n4:
+  value: 133333
+  units: bytes
+  note: >
+    Assuming beta_rd 8e-10 against beta_ring 5e-10; the ring should hold the
+    bandwidth edge because its chunks are larger.
+
+ring_vs_torch_slowdown_factor:
+  value: 5.0
+  units: x
+  note: >
+    Guess for Python per-message overhead, fresh buffers and no segment
+    pipelining.
+

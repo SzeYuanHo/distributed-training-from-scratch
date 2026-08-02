@@ -1,0 +1,66 @@
+# worked out before running the benchmark
+
+allreduces_per_layer_forward:
+  value: 2
+  units: collectives
+  note: one after attention and one after the MLP
+
+allreduces_per_layer_per_step:
+  value: 4
+  units: collectives
+  note: two forward reductions and the two f backwards
+
+allreduces_per_step_small_preset:
+  value: 29
+  units: collectives
+  note: six layers, embedding, lm-head backward, and three loss reductions
+
+mlp_block_forward_allreduces:
+  value: 1
+  units: collectives
+  note: the hidden shard goes straight from c_fc into c_proj
+
+comm_bytes_per_layer_small_b8_s256:
+  value: 12582912
+  units: bytes
+  note: 4 * 8 * 256 * 384 * 4 logical collective payload bytes
+
+comm_bytes_per_step_small_tp2:
+  value: 75497472
+  units: bytes
+  note: six layers at 12,582,912 logical payload bytes each
+
+comm_bytes_per_step_small_tp4:
+  value: 75497472
+  units: bytes
+  note: the collective buffers stay the same size as tp grows; ring link traffic does not
+
+tp_scaling_ceiling_t_for_t4_pair:
+  value: 4
+  units: ranks
+  note: first integer crossing using 65 TFLOP/s fp16 and 12 GB/s PCIe
+
+tp_scaling_ceiling_t_for_a100_nvlink:
+  value: 11
+  units: ranks
+  note: first integer crossing using 312 TFLOP/s fp16 and 300 GB/s NVLink
+
+full_logits_bytes_tier2_b8_s512:
+  value: 1179648
+  units: bytes
+  note: 8 * 512 * 72 * 4
+
+full_logits_bytes_real_vocab:
+  value: 2097152000
+  units: bytes
+  note: just under 2 GiB for a 128,000-token vocabulary
+
+vocab_parallel_ce_collectives:
+  value: 3
+  units: collectives
+  note: max, denominator, and target logit
+
+tp2_step_time_vs_single_process:
+  value: 12.0
+  units: x
+  note: rough guess; small CPU matmuls will not hide gloo latency

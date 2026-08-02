@@ -1,0 +1,96 @@
+[build-system]
+requires = ["hatchling==1.31.0", "editables==0.5"]
+build-backend = "hatchling.build"
+
+[project]
+name = "dist-train-from-scratch"
+version = "0.1.0"
+description = "A lab repository for learning distributed training by building it: collectives, DDP, ZeRO, tensor parallelism, and pipeline parallelism from scratch."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+keywords = ["distributed-training", "pytorch", "education", "tensor-parallel", "pipeline-parallel"]
+
+# torch floor rationale, so nobody has to bisect this later:
+#   2.1  register_post_accumulate_grad_hook               (Lab 1)
+#   2.2  torch.distributed.device_mesh.init_device_mesh   (Lab 4)
+#   2.4  torch.distributed.pipelining                     (Lab 3 comparison step)
+#   2.5  stable DTensor / parallelize_module API          (Lab 2 comparison step)
+# 2.8 is the minimum supported API line. The checked-in lock files record the
+# exact release used by CI and fresh managed environments.
+# The <3.0 ceiling exists because the distributed APIs above have moved between
+# minor releases before and will again.
+dependencies = [
+  "torch>=2.8,<3.0",
+  # Torch depends on setuptools at runtime on Windows. Keep it above the
+  # versions affected by PYSEC-2025-49 and PYSEC-2026-3447.
+  "setuptools>=83.0",
+  "numpy>=1.26",
+  "pyyaml>=6.0",
+  "matplotlib>=3.8",
+  "psutil>=5.9",
+]
+
+[project.optional-dependencies]
+# The two install profiles differ only in which Torch wheel index the task runner
+# points at. Both extras exist so `pip install -e .[cpu]` reads sensibly, but
+# the index choice is made by tasks.py, not here.
+cpu = []
+gpu = []
+dev = [
+  # Present in the lock so editable installs can use --no-build-isolation.
+  "hatchling==1.31.0",
+  "editables==0.5",
+  "pytest>=8.0",
+  "pytest-timeout>=2.3",
+  "ruff>=0.6",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["common"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["labs"]
+norecursedirs = [".venv", ".cache", "runs", "data", "answers", "workspace", "notebooks"]
+# importlib mode is required, not a preference. Every lab ships a `starter` and a
+# `reference` package and several ship a `test_00_math.py`. Under pytest's default
+# prepend mode those names collide in sys.modules and four of the five labs end up
+# testing lab 0's code. importlib gives each module a name derived from its path.
+addopts = "-ra --strict-markers --tb=short --import-mode=importlib"
+consider_namespace_packages = true
+# A hung collective must fail the run, not stall it. This is the outermost of
+# three timeout layers; see common/dist_utils.py for the other two.
+timeout = 300
+timeout_method = "thread"
+markers = [
+  "tier0: single process, no torch.distributed at all",
+  "tier1: multi-process on gloo/CPU, correctness and semantics",
+  "tier2: needs >= 2 CUDA devices, skipped automatically otherwise",
+  "slow: takes more than 60 seconds",
+  "negative: passes by demonstrating a silent-failure mode",
+]
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+exclude = [".venv", ".cache", "runs", "data", "workspace", "notebooks"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM"]
+ignore = [
+  "E501",    # line length is handled by the formatter
+  "B905",    # zip(strict=) is not available on the 3.10 floor
+  "SIM108",  # ternaries are not always clearer in teaching code
+  # `try/except OSError: pass` around a stat() inside a directory walk is the
+  # clearest way to write "skip files that vanished mid-walk". contextlib.suppress
+  # allocates a context manager per file and reads worse here.
+  "SIM105",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Starter files are deliberately full of unused arguments and unreachable bodies.
+"labs/*/starter/*.py" = ["ARG", "F401", "B006"]
+"answers/*/starter/*.py" = ["ARG", "F401", "B006"]
+"labs/lab_hazards/*/broken.py" = ["ALL"]
+"answers/lab_hazards/*/broken.py" = ["ALL"]

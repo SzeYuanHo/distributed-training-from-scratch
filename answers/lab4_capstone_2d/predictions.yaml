@@ -1,0 +1,49 @@
+best_config_7b_on_8xa100:
+  value: 811
+  units: encoded as dp*100 + tp*10 + pp
+  note: >
+    Corrected reference row dp8, tp1, pp1, m1, ZeRO-1. Several rows tie on
+    modelled time; this is the first feasible row, not a claim that its thin
+    memory margin is operationally best.
+
+memory_per_gpu_best_config:
+  value: 72859738368
+  units: bytes
+  note: >
+    States plus full-recompute activations for the derived 32-sequence,
+    131072-token local micro-batch.
+
+comm_bytes_per_step_best_config:
+  value: 24500000000
+  units: bytes
+  note: Pure-DP gradient traffic; the reference cost model charges 30% as exposed.
+
+does_ranking_change_on_two_nodes:
+  value: 1
+  units: 1 for yes, 0 for no
+
+dp_group_allreduces_per_step_2x2:
+  value: 28
+  units: collectives
+  note: One per distinct trainable tensor in the two-layer model.
+
+tp_group_allreduces_per_step_2x2:
+  value: 13
+  units: collectives
+  note: Four per layer, embedding, lm-head backward and three loss reductions.
+
+model_flops_per_token_coefficient:
+  value: 6
+  units: dimensionless
+
+predicted_mfu_2xt4:
+  value: 0.12
+  units: fraction
+  note: >
+    Estimate for a separate small fp16-compatible workload, not the default bf16
+    7B planner problem. Small matmuls and PCIe should leave most of peak unused.
+
+hfu_minus_mfu_with_recompute:
+  value: 0.333
+  units: fraction
+  note: One extra forward against the usual forward plus two backward passes.

@@ -1,0 +1,55 @@
+# Planning documents stay local.
+plans/
+.agents/
+.codex/
+graphify-out/
+
+# The virtualenv lives inside the repo so that deleting the repo deletes it.
+.venv/
+.venv-*/
+
+# Every third-party cache is redirected here by activate.sh / activate.ps1.
+.cache/
+
+# Generated artefacts: checkpoints, plots, traces, writeups.
+runs/
+traces/
+*.pt
+*.pth
+*.bin
+
+# Published reference measurements are part of the completed answers.
+!answers/**/runs/
+!answers/**/runs/**
+
+# Downloaded datasets. Never commit data.
+data/
+
+# Published, completed reference work lives in answers/ and is tracked.
+#
+# Learner-owned copies, measurements, device details and notes stay local.
+workspace/**
+!workspace/**/.gitkeep
+!workspace/README.md
+!workspace/**/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+*.whl
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local environment overrides
+.env

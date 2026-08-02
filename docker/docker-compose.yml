@@ -1,0 +1,37 @@
+# Controlled CPU environment across machines, and `docker rmi` is a clean
+# uninstall. Host kernel and CPU differences still apply.
+#
+#   docker compose -f docker/docker-compose.yml run --rm tests
+#   docker compose -f docker/docker-compose.yml run --rm shell
+
+services:
+  tests:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.cpu
+    image: dtfs:cpu
+    # Four ranks on a container that may only see two cores will crawl. Match
+    # this to the CPU allocation you gave Docker Desktop.
+    environment:
+      OMP_NUM_THREADS: "2"
+      DTFS_NPROC: "2"
+    volumes:
+      # Plots and writeups land on the host so you keep them after the
+      # container exits. Everything else stays inside the image.
+      - ../runs:/repo/runs
+    command: ["python", "scripts/test_answers.py", "-m", "not tier2"]
+
+  shell:
+    image: dtfs:cpu
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.cpu
+    environment:
+      OMP_NUM_THREADS: "2"
+    volumes:
+      - ../runs:/repo/runs
+      - ../labs:/repo/labs
+      - ../answers:/repo/answers
+    stdin_open: true
+    tty: true
+    command: ["/bin/bash"]

@@ -1,0 +1,65 @@
+bytes_per_param_mixed_adamw:
+  value: 16
+  units: bytes
+  note: 2 parameter + 2 gradient + 4 master + 8 Adam moments.
+
+bytes_per_param_fp32_adamw:
+  value: 16
+  units: bytes
+  note: 4 parameter + 4 gradient + 8 Adam moments, with no separate master.
+
+states_bytes_small_preset_n1:
+  value: 172320000
+  units: bytes
+  note: 10.77 M parameters at 16 bytes each.
+
+states_bytes_small_preset_zero1_n4:
+  value: 75390000
+  units: bytes
+  note: 10.77 M parameters times (2 + 2 + 12 / 4) bytes.
+
+zero1_reduction_factor_n4:
+  value: 2.285714
+  units: x
+  note: 16 / 7; parameters and gradients remain replicated.
+
+ddp_bytes_per_step_small_n4:
+  value: 32310000
+  units: bytes
+  note: 1.5 times a 2-byte gradient buffer for 10.77 M parameters.
+
+zero1_bytes_per_step_small_n4:
+  value: 32310000
+  units: bytes
+  note: Reduce-scatter and all-gather have the same ring volume as DDP.
+
+activation_bytes_small_b8_s256:
+  value: 286261248
+  units: bytes
+  note: Six layers of s*b*h*(34 + 5*a*s/h).
+
+activation_bytes_small_b8_s512:
+  value: 824180736
+  units: bytes
+  note: The linear term doubles and the attention term quadruples.
+
+measured_over_analytic_ratio_n1:
+  value: 2.2
+  units: x
+  note: >
+    Pre-benchmark guess allowing for activations, the autograd graph, allocator
+    rounding and the process baseline.
+
+max_params_8gb_plain_adamw:
+  value: 404828979
+  units: parameters
+  note: >
+    8 GiB less 15% headroom and the worked b8 s512 activation estimate, divided
+    by 16 bytes per parameter.
+
+min_ranks_for_1_5b_zero1:
+  value: 14
+  units: ranks
+  note: >
+    Pre-benchmark state-only result from 6 GB replicated plus 18 GB/N sharded
+    fitting under 7.30 GiB usable.

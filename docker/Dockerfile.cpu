@@ -1,0 +1,52 @@
+# CPU-only image. Runs every Tier-0 and Tier-1 test against the published
+# reference answers, which is most of the curriculum.
+#
+# There is deliberately no CUDA image here. A CUDA base is 6-12 GB before your
+# code, GPU passthrough on Windows needs WSL2 plus the NVIDIA Container Toolkit,
+# and none of that teaches you anything about distributed training. See
+# docs/SETUP.md for the appendix if you want it anyway.
+#
+#   docker build -f docker/Dockerfile.cpu -t dtfs:cpu .
+#   docker run --rm -it dtfs:cpu python scripts/test_answers.py -m "not tier2"
+#
+# Uninstalling is `docker rmi dtfs:cpu`, which is the cleanest removal story
+# of any option in this repo.
+
+FROM python:3.12.13-slim-bookworm
+
+# git for the odd `pip install git+...`, curl for the dataset fetch.
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends git curl ca-certificates procps \
+ && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /repo
+
+# Copy the dependency manifest first so a source edit does not invalidate the
+# torch layer. That layer is ~250 MB and takes a minute to pull.
+COPY pyproject.toml README.md LICENSE ./
+COPY requirements/cpu.lock ./requirements/cpu.lock
+COPY common/__init__.py common/repo_env.py ./common/
+
+RUN python -m pip install --no-cache-dir \
+      --extra-index-url https://download.pytorch.org/whl/cpu \
+      --require-hashes \
+      --requirement requirements/cpu.lock
+
+COPY . .
+
+RUN pip install --no-cache-dir --no-deps --no-build-isolation -e .
+
+# Same cache redirection as activate.sh. Inside a container it matters less,
+# using the same managed paths keeps container and host behaviour comparable.
+ENV XDG_CACHE_HOME=/repo/.cache \
+    HF_HOME=/repo/.cache/huggingface \
+    TORCH_HOME=/repo/.cache/torch \
+    MPLCONFIGDIR=/repo/.cache/matplotlib \
+    WANDB_MODE=offline \
+    TOKENIZERS_PARALLELISM=false \
+    OMP_NUM_THREADS=2 \
+    PYTHONUNBUFFERED=1
+
+RUN python scripts/fetch_data.py
+
+CMD ["python", "scripts/test_answers.py", "-m", "not tier2"]

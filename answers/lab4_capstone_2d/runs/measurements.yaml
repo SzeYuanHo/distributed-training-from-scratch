@@ -1,0 +1,6 @@
+measured_tokens_per_s_single_device:
+  units: tokens/s
+  value: 2586.2346565955313
+model_flops_per_token_coefficient:
+  units: dimensionless
+  value: 6

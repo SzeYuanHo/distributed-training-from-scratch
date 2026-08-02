@@ -1,0 +1,9 @@
+allreduces_per_layer_per_step:
+  units: collectives
+  value: 4
+measured_payload_l4_b4_s64_h256_tp2:
+  units: bytes
+  value: 4721664
+measured_payload_l4_b4_s64_h256_tp4:
+  units: bytes
+  value: 4721664

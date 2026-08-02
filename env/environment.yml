@@ -1,0 +1,30 @@
+# Conda alternative, supported but not recommended.
+#
+#   conda env create -f env/environment.yml
+#   conda activate dist-train
+#   python -m pip install --require-hashes \
+#     --extra-index-url https://download.pytorch.org/whl/cpu \
+#     -r requirements/cpu.lock
+#   python -m pip install --no-deps --no-build-isolation -e .
+#
+# READ THIS BEFORE YOU USE IT
+# ---------------------------
+# A normal user-level Conda configuration keeps the environment and package cache
+# outside this repository. `python tasks.py nuke` cannot remove either location;
+# check `conda info` for the actual paths used by your installation.
+#
+# To remove it yourself, and you will have to do this by hand:
+#
+#   conda deactivate
+#   conda env remove -n dist-train
+#   conda clean -a
+#
+# The uv path (`python tasks.py setup`) puts everything in ./.venv and needs
+# none of that. Prefer it unless conda is mandated for you.
+
+name: dist-train
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pip

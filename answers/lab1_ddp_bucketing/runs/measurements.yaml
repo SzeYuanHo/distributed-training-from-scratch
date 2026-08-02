@@ -1,0 +1,18 @@
+bucketed_allreduces_per_step_1mb:
+  units: collectives
+  value: 4.0
+ddp_2rank_step_ms:
+  units: ms
+  value: 255.9736444446672
+optimal_bucket_bytes:
+  units: bytes
+  value: 1048576
+optimal_bucket_count:
+  units: buckets
+  value: 4.0
+single_process_step_ms:
+  units: ms
+  value: 151.93936666603096
+tier1_speedup_vs_single_process:
+  units: x
+  value: 0.593574260333177

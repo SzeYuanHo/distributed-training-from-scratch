@@ -1,0 +1,89 @@
+# Lab 1B predictions. Fill before `python tasks.py bench LAB=1b`.
+# Then: python tasks.py reconcile LAB=1b
+
+# --------------------------------------------------------------------------- #
+# The ledger. These are exact arithmetic, so there is no excuse for missing.
+# --------------------------------------------------------------------------- #
+
+bytes_per_param_mixed_adamw:
+  value: null
+  units: bytes
+  note: THEORY section 1. The famous number.
+
+bytes_per_param_fp32_adamw:
+  value: null
+  units: bytes
+  note: >
+    Same table without mixed precision. Work it out before you guess; the answer
+    says something about what mixed precision actually buys you.
+
+states_bytes_small_preset_n1:
+  value: null
+  units: bytes
+  note: The `small` preset (10.77 M params), ZeRO-0, world size 1, bf16 AdamW.
+
+states_bytes_small_preset_zero1_n4:
+  value: null
+  units: bytes
+  note: Same model, ZeRO-1, N=4.
+
+zero1_reduction_factor_n4:
+  value: null
+  units: x
+  note: states_bytes ZeRO-0 divided by states_bytes ZeRO-1, at N=4. Not 4.
+
+# --------------------------------------------------------------------------- #
+# Communication. The one that surprises people.
+# --------------------------------------------------------------------------- #
+
+ddp_bytes_per_step_small_n4:
+  value: null
+  units: bytes
+  note: Ring all-reduce volume per rank for one step, small preset, N=4.
+
+zero1_bytes_per_step_small_n4:
+  value: null
+  units: bytes
+  note: >
+    Reduce-scatter plus all-gather, per rank. Compare it to the line above before
+    you look at the measurement.
+
+# --------------------------------------------------------------------------- #
+# Activations, which the ledger ignores and which usually dominate
+# --------------------------------------------------------------------------- #
+
+activation_bytes_small_b8_s256:
+  value: null
+  units: bytes
+  note: Korthikanti formula, THEORY section 4. All six layers.
+
+activation_bytes_small_b8_s512:
+  value: null
+  units: bytes
+  note: Same at double the sequence length. Predict the growth factor first.
+
+# --------------------------------------------------------------------------- #
+# Measurement, where the gap lives
+# --------------------------------------------------------------------------- #
+
+measured_over_analytic_ratio_n1:
+  value: null
+  units: x
+  note: >
+    Measured peak divided by the analytic states total, single process. Above 1.
+    Predict how far above, then account for the difference: activations, the
+    autograd graph, cuBLAS workspaces, allocator rounding.
+
+# --------------------------------------------------------------------------- #
+# Capacity planning: the actual skill
+# --------------------------------------------------------------------------- #
+
+max_params_8gb_plain_adamw:
+  value: null
+  units: parameters
+  note: THEORY section 5 question A. Batch 8, sequence 512, 15% headroom.
+
+min_ranks_for_1_5b_zero1:
+  value: null
+  units: ranks
+  note: THEORY section 5 question C.

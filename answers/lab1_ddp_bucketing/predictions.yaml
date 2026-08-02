@@ -1,0 +1,56 @@
+# Written before the sweep.
+
+total_gradient_bytes_tiny:
+  value: 3275776
+  units: bytes
+  note: Tiny preset parameter count times four bytes.
+
+simple_ddp_allreduces_per_step:
+  value: 52
+  units: collectives
+  note: One per distinct parameter tensor.
+
+bucketed_allreduces_per_step_1mb:
+  value: 4
+  units: collectives
+  note: ceil(total_gradient_bytes / 1 MiB).
+
+no_sync_allreduces_per_4_microsteps:
+  value: 4
+  units: collectives
+  note: Three no_sync micro-steps then one syncing step.
+
+optimal_bucket_bytes:
+  value: 1048576
+  units: bytes
+  note: My pre-run guess from the latency/tail trade-off.
+
+optimal_bucket_count:
+  value: 4
+  units: buckets
+  note: ceil(total_gradient_bytes / optimal_bucket_bytes).
+
+single_process_step_ms:
+  value: 45
+  units: ms
+  note: Tiny preset, batch 8, block 128 on this CPU.
+
+ddp_2rank_step_ms:
+  value: 95
+  units: ms
+  note: Pre-benchmark estimate for the same work per rank plus gloo all-reduces.
+
+tier1_speedup_vs_single_process:
+  value: 0.47
+  units: x
+  note: I expected two local ranks to be slower than one.
+
+exposed_comm_fraction:
+  value: 0.65
+  units: fraction
+  note: Share of wall time I expected to remain exposed.
+
+tier2_scaling_efficiency_2xT4:
+  value: 0.75
+  units: fraction
+  note: Pre-run guess only; no Tier-2 hardware here.

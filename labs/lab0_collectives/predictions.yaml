@@ -1,0 +1,99 @@
+# Lab 0 predictions.
+#
+# Fill every `value:` before running `python tasks.py bench LAB=0`. Guess when you
+# do not know. A wrong number you committed to teaches you something; a blank one
+# does not.
+#
+# Then: python tasks.py reconcile LAB=0
+#
+# The `note:` field is for the reasoning behind the number. Write it now, while you
+# still remember why you believed it.
+
+# --------------------------------------------------------------------------- #
+# The cost model, fitted on gloo over localhost
+# --------------------------------------------------------------------------- #
+
+alpha_seconds:
+  value: null
+  units: s
+  note: >
+    Per-message latency. Think about what a localhost round trip costs: a syscall,
+    a trip through the loopback interface, a scheduler wakeup on the other side.
+
+beta_seconds_per_byte:
+  value: null
+  units: s/byte
+  note: >
+    Inverse bandwidth. Loopback is a memcpy plus protocol overhead, so this should
+    land somewhere between DRAM bandwidth and a real NIC. 1/beta is your effective
+    bytes per second.
+
+# --------------------------------------------------------------------------- #
+# Predicted bytes on the wire
+# --------------------------------------------------------------------------- #
+
+ring_allreduce_bytes_per_rank_n4_1mb:
+  value: null
+  units: bytes
+  note: >
+    A 1 MiB (1048576 byte) buffer, 4 ranks, ring all-reduce. Use the formula you
+    derived in THEORY section 4, do not measure first.
+
+ring_allreduce_sends_per_rank_n4:
+  value: null
+  units: messages
+  note: Both phases together. This one is exact, not an estimate.
+
+naive_allreduce_bytes_at_root_n4_1mb:
+  value: null
+  units: bytes
+  note: What rank 0 receives in the gather-to-root scheme.
+
+broadcast_linear_sends_n8:
+  value: null
+  units: messages
+  note: Sends issued by rank 0 alone.
+
+broadcast_tree_sends_total_n8:
+  value: null
+  units: messages
+  note: Across all ranks, not just rank 0.
+
+# --------------------------------------------------------------------------- #
+# Predicted timings
+# --------------------------------------------------------------------------- #
+
+allreduce_ring_1mb_n4_seconds:
+  value: null
+  units: s
+  note: alpha and beta from above, plugged into your T_ring expression.
+
+allreduce_ring_16mb_n4_seconds:
+  value: null
+  units: s
+  note: >
+    Sixteen times the bytes. Predict before you look: does the time go up by 16x,
+    or by less, or by more?
+
+crossover_bytes_n4:
+  value: null
+  units: bytes
+  note: >
+    Message size where ring overtakes recursive doubling at N=4. THEORY section 5.
+    If your answer is "there isn't one", re-read that section: the naive comparison
+    is degenerate and the real crossover comes from the two algorithms achieving
+    different effective bandwidths.
+
+# --------------------------------------------------------------------------- #
+# The one you will get most wrong
+# --------------------------------------------------------------------------- #
+
+ring_vs_torch_slowdown_factor:
+  value: null
+  units: x
+  note: >
+    How much slower is your from-scratch ring all-reduce than torch's own
+    dist.all_reduce on the same buffer and world size? Predict the factor. Then
+    look at the measured number and work out where it goes: python overhead per
+    message, no segment pipelining, no eager/rendezvous protocol switching, one
+    tensor allocation per step.

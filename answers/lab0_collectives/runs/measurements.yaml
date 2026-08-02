@@ -1,0 +1,12 @@
+allreduce_ring_16mb_n4_seconds:
+  value: 0.09461230001761578
+allreduce_ring_1mb_n4_seconds:
+  value: 0.003210499999113381
+alpha_seconds:
+  value: 0.0002218070972345749
+beta_seconds_per_byte:
+  value: 1.73087550089031e-09
+crossover_bytes_n4:
+  value: 105493.98898078316
+ring_allreduce_bytes_per_rank_n4_1mb:
+  value: 1572864.0

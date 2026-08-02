@@ -1,0 +1,91 @@
+# Lab 1 predictions. Fill every value before `python tasks.py bench LAB=1`.
+# Then: python tasks.py reconcile LAB=1
+
+# --------------------------------------------------------------------------- #
+# Model and gradient sizes. These you can compute exactly, so get them exactly.
+# --------------------------------------------------------------------------- #
+
+total_gradient_bytes_tiny:
+  value: null
+  units: bytes
+  note: >
+    The tiny preset in fp32. Parameter count is printed by
+    `python -c "from common import reference_gpt as r; print(r.make_model('tiny').num_params())"`
+    but work out the arithmetic yourself first.
+
+# --------------------------------------------------------------------------- #
+# Collective counts. Exact integers, no estimating.
+# --------------------------------------------------------------------------- #
+
+simple_ddp_allreduces_per_step:
+  value: null
+  units: collectives
+  note: One per parameter tensor. Count the tensors, not the parameters.
+
+bucketed_allreduces_per_step_1mb:
+  value: null
+  units: collectives
+  note: ceil(total_gradient_bytes / 1 MiB).
+
+no_sync_allreduces_per_4_microsteps:
+  value: null
+  units: collectives
+  note: Three no_sync micro-steps then one syncing step.
+
+# --------------------------------------------------------------------------- #
+# The bucket-size optimum, from THEORY section 2
+# --------------------------------------------------------------------------- #
+
+optimal_bucket_bytes:
+  value: null
+  units: bytes
+  note: >
+    Using your Lab 0 alpha and beta. Commit to a number. The sweep runs six sizes
+    from 0.5 MiB to 100 MiB and you want your guess on record first.
+
+optimal_bucket_count:
+  value: null
+  units: buckets
+  note: ceil(total_gradient_bytes / optimal_bucket_bytes).
+
+# --------------------------------------------------------------------------- #
+# Timing. This is where the predictions get uncomfortable, which is the point.
+# --------------------------------------------------------------------------- #
+
+single_process_step_ms:
+  value: null
+  units: ms
+  note: One forward, backward and optimizer step, tiny preset, batch 8, block 128, CPU.
+
+ddp_2rank_step_ms:
+  value: null
+  units: ms
+  note: Same work per rank, plus the all-reduces, on 2 gloo ranks.
+
+tier1_speedup_vs_single_process:
+  value: null
+  units: x
+  note: >
+    ddp step time divided by single-process step time, at world size 2 with the
+    same per-rank batch. Below 1.0 means slower. Predict a specific number and
+    say why in your writeup: four ranks on one laptop share the memory bus and
+    the cores, so you added communication without adding compute.
+
+exposed_comm_fraction:
+  value: null
+  units: fraction
+  note: >
+    From the Gantt chart: communication time with no compute running underneath,
+    divided by wall time. Zero would mean perfect overlap. THEORY section 1 says
+    why zero is not reachable.
+
+# --------------------------------------------------------------------------- #
+# Tier 2, if you get a Kaggle session
+# --------------------------------------------------------------------------- #
+
+tier2_scaling_efficiency_2xT4:
+  value: null
+  units: fraction
+  note: >
+    Throughput on 2 T4s divided by 2x the single-T4 throughput. 1.0 would be
+    perfect linear scaling. Predict before you run.

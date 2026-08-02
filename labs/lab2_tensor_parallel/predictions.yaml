@@ -1,0 +1,102 @@
+# Lab 2 predictions. Fill before `python tasks.py bench LAB=2`.
+# Then: python tasks.py reconcile LAB=2
+
+# --------------------------------------------------------------------------- #
+# Collective counts. Exact integers from THEORY section 5.
+# --------------------------------------------------------------------------- #
+
+allreduces_per_layer_forward:
+  value: null
+  units: collectives
+  note: Attention and MLP. Count the f operators too, they are identity in forward.
+
+allreduces_per_layer_per_step:
+  value: null
+  units: collectives
+  note: Forward plus backward. The number the test asserts.
+
+allreduces_per_step_small_preset:
+  value: null
+  units: collectives
+  note: >
+    Six layers, plus whatever the embedding and the loss contribute. Work out the
+    embedding and loss separately; they are easy to forget and the test counts them.
+
+mlp_block_forward_allreduces:
+  value: null
+  units: collectives
+  note: >
+    One transformer MLP block, forward only. If your answer is 2, re-read THEORY
+    section 3 before implementing.
+
+# --------------------------------------------------------------------------- #
+# Collective tensor payload bytes counted by CommCounter
+# --------------------------------------------------------------------------- #
+
+comm_bytes_per_layer_small_b8_s256:
+  value: null
+  units: bytes
+  note: >
+    One layer, one step, fp32, h=384, batch 8, sequence 256. Logical
+    collective payload, not topology-dependent link traffic.
+
+comm_bytes_per_step_small_tp2:
+  value: null
+  units: bytes
+  note: All six layers, tp_size=2. CommCounter payload convention from THEORY section 5.
+
+comm_bytes_per_step_small_tp4:
+  value: null
+  units: bytes
+  note: >
+    Same logical payload at tp_size=4. Predict the ratio to tp2 before computing it;
+    actual ring link traffic still includes 2(t-1)/t.
+
+# --------------------------------------------------------------------------- #
+# The scaling ceiling. Derived, not measured; you do not have the hardware.
+# --------------------------------------------------------------------------- #
+
+tp_scaling_ceiling_t_for_t4_pair:
+  value: null
+  units: ranks
+  note: >
+    THEORY section 6. The t at which communication time first exceeds compute time
+    for h=4096, b*s=8192, fp16, on T4s over PCIe.
+
+tp_scaling_ceiling_t_for_a100_nvlink:
+  value: null
+  units: ranks
+  note: Same model, NVLink 3.0. Should be substantially larger; say how much.
+
+# --------------------------------------------------------------------------- #
+# Vocab-parallel cross-entropy
+# --------------------------------------------------------------------------- #
+
+full_logits_bytes_tier2_b8_s512:
+  value: null
+  units: bytes
+  note: The (b, s, V) tensor you are avoiding materialising, for this repo's preset.
+
+full_logits_bytes_real_vocab:
+  value: null
+  units: bytes
+  note: >
+    Same shape with V=128000, which is a realistic modern vocabulary. Compare it to
+    the parameter memory of a 7B model and you have the reason vocab parallelism
+    exists.
+
+vocab_parallel_ce_collectives:
+  value: null
+  units: collectives
+  note: Forward pass only. THEORY section 7.
+
+# --------------------------------------------------------------------------- #
+# Timing, at Tier 1, where it will be bad
+# --------------------------------------------------------------------------- #
+
+tp2_step_time_vs_single_process:
+  value: null
+  units: x
+  note: >
+    TP step time divided by single-process step time, tp_size=2, gloo, CPU. Above 1
+    means slower. Predict a number and account for it in the writeup.

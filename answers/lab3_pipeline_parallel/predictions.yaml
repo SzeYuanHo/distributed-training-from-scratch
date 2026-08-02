@@ -1,0 +1,54 @@
+theoretical_bubble_p2_m4:
+  value: 0.2
+  units: fraction
+  note: (p-1)/(m+p-1); the overhead ratio (p-1)/m is 0.25
+
+theoretical_bubble_p4_m8:
+  value: 0.2727272727272727
+  units: fraction
+
+theoretical_bubble_p4_m16:
+  value: 0.15789473684210525
+  units: fraction
+
+measured_bubble_p4_m8:
+  value: 0.52
+  units: fraction
+  note: I expect gloo and the uneven last stage to show up here.
+
+afab_max_inflight_microbatches_p4_m8:
+  value: 8
+  units: micro-batches
+
+onefonebe_max_inflight_microbatches_p4_m8:
+  value: 4
+  units: micro-batches
+
+onefonebe_warmup_steps_stage0_p4:
+  value: 4
+  units: forwards
+
+onefonebe_warmup_steps_stage3_p4:
+  value: 1
+  units: forwards
+
+slowest_stage_index_p3_small:
+  value: 2
+  units: stage index
+
+stage_imbalance_factor_p3_small:
+  value: 1.0074
+  units: x
+
+stage_imbalance_factor_p3_vocab128k:
+  value: 14.16
+  units: x
+
+activation_memory_ratio_afab_over_1f1b_p4_m16:
+  value: 4
+  units: x
+
+interleaved_v_star_infiniband:
+  value: 2
+  units: chunks
+  note: A guess assuming the first extra virtual chunk still hides its traffic.

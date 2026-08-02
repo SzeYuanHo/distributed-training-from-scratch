@@ -1,0 +1,77 @@
+# Lab 4 predictions. Fill before `python tasks.py bench LAB=4`.
+# Then: python tasks.py reconcile LAB=4
+#
+# Unlike the other labs, most of these are outputs of your own planner rather than
+# external measurements. Predict them by hand first, then check whether the planner
+# agrees. When it does not, one of you is wrong, and finding out which is the
+# exercise.
+
+# --------------------------------------------------------------------------- #
+# The decision, hand-computed. THEORY section 5.
+# --------------------------------------------------------------------------- #
+
+best_config_7b_on_8xa100:
+  value: null
+  units: encoded as dp*100 + tp*10 + pp
+  note: >
+    Your chosen (dp, tp, pp) for 7B on 8xA100 NVLink, encoded so it fits in a
+    number. dp=2, tp=4, pp=1 would be 241. Use the aligned 1,048,576-token
+    default, its derived local micro-batch, and full recomputation. Commit before
+    running the planner.
+
+memory_per_gpu_best_config:
+  value: null
+  units: bytes
+  note: >
+    Include activations for global_batch_tokens / (dp * micro_batches * seq_len)
+    complete local sequences. The planner computes it; predict it first.
+
+comm_bytes_per_step_best_config:
+  value: null
+  units: bytes
+
+does_ranking_change_on_two_nodes:
+  value: null
+  units: 1 for yes, 0 for no
+  note: >
+    Same model, 16 GPUs across two nodes on 25 GB/s InfiniBand. If your answer is
+    no, your cost model is probably not sensitive to the interconnect, which means
+    it is not doing its job.
+
+# --------------------------------------------------------------------------- #
+# 2D composition at Tier 1. Exact integers.
+# --------------------------------------------------------------------------- #
+
+dp_group_allreduces_per_step_2x2:
+  value: null
+  units: collectives
+  note: Collectives on the DP group per step, on a 2x2 mesh.
+
+tp_group_allreduces_per_step_2x2:
+  value: null
+  units: collectives
+  note: On the TP group. Lab 2's per-layer count times the layer count.
+
+# --------------------------------------------------------------------------- #
+# MFU. THEORY section 4.
+# --------------------------------------------------------------------------- #
+
+model_flops_per_token_coefficient:
+  value: null
+  units: dimensionless
+  note: The constant C in "model FLOPs per token is approximately C times Psi".
+
+predicted_mfu_2xt4:
+  value: null
+  units: fraction
+  note: >
+    What you expect on an available 2xT4 run. Utilisation is workload- and
+    implementation-specific; a small model over PCIe may be far below a tuned
+    large-scale run. Predict a specific number and explain the gap afterwards.
+
+hfu_minus_mfu_with_recompute:
+  value: null
+  units: fraction
+  note: >
+    How much higher HFU runs than MFU with full activation recomputation on.
+    Derivable from the extra forward pass; no measurement needed.

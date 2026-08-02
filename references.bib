@@ -1,0 +1,214 @@
+% Every source the labs point at. Links only, no vendored PDFs.
+% Cite these in runs/labN/writeup.md when you quote a number.
+
+% ---------------------------------------------------------------------------
+% Anchor texts
+% ---------------------------------------------------------------------------
+
+@misc{ultrascale2025,
+  title        = {The Ultra-Scale Playbook: Training LLMs on GPU Clusters},
+  author       = {{Hugging Face nanotron team}},
+  year         = {2025},
+  howpublished = {\url{https://huggingface.co/spaces/nanotron/ultrascale-playbook}},
+  note         = {Main course text. Maps close to one-to-one onto the labs here.}
+}
+
+@misc{scalingbook2025,
+  title        = {How to Scale Your Model: A Systems View of LLMs},
+  author       = {Austin, Jacob and Douglas, Sholto and Frostig, Roy and Levskaya, Anselm and others},
+  organization = {Google DeepMind},
+  year         = {2025},
+  howpublished = {\url{https://jax-ml.github.io/scaling-book/}},
+  note         = {The quantitative reasoning text. Chapter 1 (Rooflines) is required for Lab 0.}
+}
+
+@book{grama2003,
+  title     = {Introduction to Parallel Computing},
+  author    = {Grama, Ananth and Gupta, Anshul and Karypis, George and Kumar, Vipin},
+  edition   = {2nd},
+  publisher = {Addison-Wesley},
+  year      = {2003},
+  isbn      = {978-0201648652},
+  note      = {Ch. 4 is Lab 0 in book form. Sec. 2.5 is the alpha-beta cost model.}
+}
+
+@book{eijkhout_hpc,
+  title     = {The Art of HPC, Vol. 2: Parallel Programming for Science and Engineering},
+  author    = {Eijkhout, Victor},
+  year      = {2022},
+  howpublished = {\url{https://theartofhpc.com}},
+  note      = {Free alternative to Grama for the collectives and cost-model material.}
+}
+
+% ---------------------------------------------------------------------------
+% Core papers, one or two per lab
+% ---------------------------------------------------------------------------
+
+@article{li2020pytorch,
+  title   = {PyTorch Distributed: Experiences on Accelerating Data Parallel Training},
+  author  = {Li, Shen and Zhao, Yanli and Varma, Rohan and Salpekar, Omkar and Noordhuis, Pieter and Li, Teng and Paszke, Adam and Smith, Jeff and Vaughan, Brian and Damania, Pritam and Chintala, Soumith},
+  journal = {Proceedings of the VLDB Endowment},
+  volume  = {13},
+  number  = {12},
+  year    = {2020},
+  eprint  = {2006.15704},
+  note    = {Section 3 is the entire blueprint for Lab 1: bucketing, overlap, reverse order.}
+}
+
+@inproceedings{rajbhandari2020zero,
+  title     = {ZeRO: Memory Optimizations Toward Training Trillion Parameter Models},
+  author    = {Rajbhandari, Samyam and Rasley, Jeff and Ruwase, Olatunji and He, Yuxiong},
+  booktitle = {SC20},
+  year      = {2020},
+  eprint    = {1910.02054},
+  note      = {Section 3 memory ledger, Section 5 stages. Lab 1B.}
+}
+
+@article{goyal2017accurate,
+  title  = {Accurate, Large Minibatch SGD: Training ImageNet in 1 Hour},
+  author = {Goyal, Priya and Doll{\'a}r, Piotr and Girshick, Ross and Noordhuis, Pieter and Wesolowski, Lukasz and Kyrola, Aapo and Tulloch, Andrew and Jia, Yangqing and He, Kaiming},
+  year   = {2017},
+  eprint = {1706.02677},
+  note   = {Section 2: linear scaling rule and gradual warmup. Lab 1.}
+}
+
+@article{shoeybi2019megatron,
+  title  = {Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism},
+  author = {Shoeybi, Mohammad and Patwary, Mostofa and Puri, Raul and LeGresley, Patrick and Casper, Jared and Catanzaro, Bryan},
+  year   = {2019},
+  eprint = {1909.08053},
+  note   = {Section 3 is Lab 2. Read it twice: once for the algebra, once for f and g.}
+}
+
+@article{korthikanti2022reducing,
+  title  = {Reducing Activation Recomputation in Large Transformer Models},
+  author = {Korthikanti, Vijay and Casper, Jared and Lym, Sangkug and McAfee, Lawrence and Andersch, Michael and Shoeybi, Mohammad and Catanzaro, Bryan},
+  year   = {2022},
+  eprint = {2205.05198},
+  note   = {Section 3 sequence parallelism, Section 4 the activation-memory formula. Lab 2 stretch and Lab 1B.}
+}
+
+@article{huang2018gpipe,
+  title  = {GPipe: Efficient Training of Giant Neural Networks using Pipeline Parallelism},
+  author = {Huang, Yanping and Cheng, Youlong and Bapna, Ankur and Firat, Orhan and Chen, Mia Xu and Chen, Dehao and Lee, HyoukJoong and Ngiam, Jiquan and Le, Quoc V and Wu, Yonghui and Chen, Zhifeng},
+  year   = {2018},
+  eprint = {1811.06965},
+  note   = {Section 2: micro-batching and the bubble. Lab 3.}
+}
+
+@inproceedings{narayanan2021efficient,
+  title     = {Efficient Large-Scale Language Model Training on GPU Clusters Using Megatron-LM},
+  author    = {Narayanan, Deepak and Shoeybi, Mohammad and Casper, Jared and LeGresley, Patrick and Patwary, Mostofa and Korthikanti, Vijay and Vainbrand, Dmitri and Kashinkunti, Prethvi and Bernauer, Julie and Catanzaro, Bryan and Phanishayee, Amar and Zaharia, Matei},
+  booktitle = {SC21},
+  year      = {2021},
+  eprint    = {2104.04473},
+  note      = {PTD-P. Section 2.2 pipeline schedules, Section 3 composing DP/TP/PP. Labs 3 and 4.}
+}
+
+@article{sergeev2018horovod,
+  title  = {Horovod: fast and easy distributed deep learning in TensorFlow},
+  author = {Sergeev, Alexander and Del Balso, Mike},
+  year   = {2018},
+  eprint = {1802.05799},
+  note   = {The ring all-reduce description. Lab 0.}
+}
+
+@article{zhao2023fsdp,
+  title  = {PyTorch FSDP: Experiences on Scaling Fully Sharded Data Parallel},
+  author = {Zhao, Yanli and Gu, Andrew and Varma, Rohan and Luo, Liang and Huang, Chien-Chin and Xu, Min and Wright, Less and Shojanazeri, Hamid and Ott, Myle and Shleifer, Sam and Desmaison, Alban and Balioglu, Can and Damania, Pritam and Nguyen, Bernard and Chauhan, Geeta and Hao, Yuchen and Mathews, Ajit and Li, Shen},
+  year   = {2023},
+  eprint = {2304.11277},
+  note   = {Optional reading for Lab 1B.}
+}
+
+@article{narayanan2019pipedream,
+  title  = {PipeDream: Generalized Pipeline Parallelism for DNN Training},
+  author = {Narayanan, Deepak and Harlap, Aaron and Phanishayee, Amar and Seshadri, Vivek and Devanur, Nikhil R and Ganger, Gregory R and Gibbons, Phillip B and Zaharia, Matei},
+  year   = {2019},
+  eprint = {1806.03377},
+  note   = {Optional for Lab 3: asynchronous pipelining and weight stashing.}
+}
+
+% ---------------------------------------------------------------------------
+% Code the labs are compared against
+% ---------------------------------------------------------------------------
+
+@misc{picotron,
+  title        = {picotron: a minimalist 4D-parallelism framework for education},
+  author       = {{Hugging Face}},
+  howpublished = {\url{https://github.com/huggingface/picotron}},
+  note         = {Read after attempting each lab, as a model answer. Also the origin of the CPU-mode technique used by Tier 1 here.}
+}
+
+@misc{nanotron,
+  title        = {nanotron},
+  author       = {{Hugging Face}},
+  howpublished = {\url{https://github.com/huggingface/nanotron}},
+  note         = {The production version of picotron. Useful for seeing what the real thing costs in complexity.}
+}
+
+@misc{nanogpt,
+  title        = {nanoGPT},
+  author       = {Karpathy, Andrej},
+  howpublished = {\url{https://github.com/karpathy/nanoGPT}},
+  note         = {common/reference_gpt.py is adapted from this. MIT.}
+}
+
+@misc{torchtitan,
+  title        = {torchtitan: a PyTorch native platform for training generative AI models},
+  author       = {{PyTorch}},
+  howpublished = {\url{https://github.com/pytorch/torchtitan}},
+  note         = {Production reference for composing DP/TP/PP over a DeviceMesh. Lab 4.}
+}
+
+@misc{megatronlm,
+  title        = {Megatron-LM},
+  author       = {{NVIDIA}},
+  howpublished = {\url{https://github.com/NVIDIA/Megatron-LM}},
+  note         = {megatron/core/tensor_parallel/{layers,mappings,cross_entropy,random}.py. Lab 2.}
+}
+
+% ---------------------------------------------------------------------------
+% Orientation and background
+% ---------------------------------------------------------------------------
+
+@misc{weng2021largemodels,
+  title        = {How to Train Really Large Models on Many GPUs},
+  author       = {Weng, Lilian},
+  year         = {2021},
+  howpublished = {\url{https://lilianweng.github.io/posts/2021-09-25-train-large/}},
+  note         = {Best single-sitting overview. Read before Lab 0.}
+}
+
+@misc{cs336,
+  title        = {CS336: Language Modeling from Scratch},
+  organization = {Stanford University},
+  howpublished = {\url{https://cs336.stanford.edu}},
+  note         = {Assignment 2 (Systems) is the closest institutional analogue to this repo.}
+}
+
+@book{raschka2024llm,
+  title     = {Build a Large Language Model (From Scratch)},
+  author    = {Raschka, Sebastian},
+  publisher = {Manning},
+  year      = {2024},
+  note      = {Appendix A covers PyTorch DDP gently. Good on-ramp if the Transformer itself is shaky.}
+}
+
+@book{kirk2022pmpp,
+  title     = {Programming Massively Parallel Processors},
+  author    = {Kirk, David B and Hwu, Wen-mei W},
+  edition   = {4th},
+  publisher = {Morgan Kaufmann},
+  year      = {2022},
+  note      = {The single-GPU layer below this curriculum. Not required.}
+}
+
+@book{tanenbaum2023ds,
+  title     = {Distributed Systems},
+  author    = {Tanenbaum, Andrew S and van Steen, Maarten},
+  edition   = {4th},
+  year      = {2023},
+  howpublished = {\url{https://www.distributed-systems.net/index.php/books/ds4/}},
+  note      = {Failure models and coordination. Context for Lab H.}
+}

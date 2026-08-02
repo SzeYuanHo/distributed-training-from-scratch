@@ -1,0 +1,12 @@
+bytes_per_param_mixed_adamw:
+  units: bytes
+  value: 16
+states_bytes_small_preset_n1:
+  units: bytes
+  value: 171589632
+states_bytes_small_preset_zero1_n4:
+  units: bytes
+  value: 75070464
+optimizer_state_reduction_n4:
+  units: x
+  value: 3.9670551087663775

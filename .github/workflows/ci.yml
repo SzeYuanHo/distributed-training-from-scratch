@@ -1,0 +1,118 @@
+name: ci
+
+# The checked-in labs are intentionally incomplete exercises. Correctness CI
+# therefore runs the same tests against the completed, published answers in an
+# isolated temporary checkout; it never overwrites labs/*/starter in the source
+# tree.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DTFS_NPROC: "2"
+  PYTHONUNBUFFERED: "1"
+
+jobs:
+  lint-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.11.16"
+      - run: uv tool run --from ruff==0.16.0 ruff check .
+      - run: uv tool run --from ruff==0.16.0 ruff format --check .
+      - run: uv build
+
+  exercise-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: frozen reference is unchanged
+        run: python scripts/freeze_check.py
+      - name: exercise tests do not import published answers
+        shell: bash
+        run: |
+          if grep -rEn "^\s*(from|import)\s+answers" labs/ common/ scripts/; then
+            echo "::error::Exercise tests and libraries must target labs/*/starter, not answers/."
+            exit 1
+          fi
+      - name: every exercise has the required artefacts and deliberate stubs
+        run: python scripts/check_lab_structure.py
+
+  reference-tests:
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            python: "3.10"
+          - os: ubuntu-latest
+            python: "3.12"
+          - os: windows-latest
+            python: "3.12"
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.11.16"
+      - name: install CPU-only profile
+        run: python tasks.py setup-cpu
+      - name: verify the local distributed runtime
+        run: python tasks.py doctor
+      - name: test the completed published answers
+        run: python tasks.py test-answers
+      - name: footprint report
+        if: always()
+        run: python tasks.py disk
+
+  verify-clean:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.11.16"
+      - name: snapshot before setup
+        run: python scripts/verify_clean.py --snapshot
+      - name: install and test completed answers
+        run: |
+          python tasks.py setup-cpu
+          python tasks.py test-answers
+      - name: assert no new global cache residue
+        run: python scripts/verify_clean.py --check
+
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: build the CPU image
+        run: docker build --file docker/Dockerfile.cpu --tag dtfs:ci .
+      - name: smoke-test the built image
+        run: |
+          docker run --rm dtfs:ci python scripts/check_lab_structure.py
+          docker run --rm dtfs:ci python tasks.py doctor
+          docker run --rm dtfs:ci
