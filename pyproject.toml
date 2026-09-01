@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling==1.31.0", "editables==0.5"]
+requires = ["hatchling==1.32.0", "editables==0.5"]
 build-backend = "hatchling.build"
 
 [project]
@@ -40,7 +40,7 @@ cpu = []
 gpu = []
 dev = [
   # Present in the lock so editable installs can use --no-build-isolation.
-  "hatchling==1.31.0",
+  "hatchling==1.32.0",
   "editables==0.5",
   "pytest>=8.0",
   "pytest-timeout>=2.3",
